@@ -1,8 +1,30 @@
-version: "3.7"
+version: "3.9"
 
 services:
-  fastapi:
+  fastapi_app:
+    image: fastapi_app:latest
+    hostname: "{{.Service.Name}}.{{.Task.Slot}}"
     build: .
     ports:
       - "8000:8000"
-    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+      update_config:
+        parallelism: 1
+        delay: 30s
+        order: start-first
+        failure_action: rollback
+networks:
+  network_swarm_public:
+    name: network_swarm_public
+    external: true
