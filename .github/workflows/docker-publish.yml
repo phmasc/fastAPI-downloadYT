@@ -15,6 +15,6 @@ jobs:
       - name: Login to github container registry
         run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
       - name: Build the Docker Image
-        run: docker build -t ghcr.io/phmasc/fastAPI-downloadYT:"$(cat deploy-settings.json | jq -r .version)" .
+        run: docker build -t ghcr.io/phmasc/fastapi-downloadyt:"$(cat deploy-settings.json | jq -r .version)" .
       - name: Push the Docker Image
-        run: docker push ghcr.io/phmasc/fastAPI-downloadYT:"$(cat deploy-settings.json | jq -r .version)"
+        run: docker push ghcr.io/phmasc/fastapi-downloadyt:"$(cat deploy-settings.json | jq -r .version)"
