@@ -3,6 +3,8 @@ anyio==4.10.0
 click==8.2.1
 colorama==0.4.6
 fastapi==0.116.1
+ffmpeg-python==0.2.0
+future==1.0.0
 h11==0.16.0
 idna==3.10
 pydantic==2.11.7
@@ -12,3 +14,4 @@ starlette==0.47.3
 typing-inspection==0.4.1
 typing_extensions==4.15.0
 uvicorn==0.35.0
+yt-dlp==2025.8.27

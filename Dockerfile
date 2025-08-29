@@ -11,11 +11,16 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 # Instalar dependências do sistema (curl para healthcheck)
-RUN apt-get update && apt-get install -y --no-install-recommends curl \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl ffmpeg && \
+    rm -rf /var/lib/apt/lists/*
 
 # Criar usuário não-root
-RUN adduser --disabled-password --gecos "" appuser && chown -R appuser:appuser /app
+RUN adduser --disabled-password --gecos "" appuser \
+    && chown -R appuser:appuser /app \
+    && mkdir -p /app/media \
+    && chown -R appuser:appuser /app/media \
+    && chmod u+rwx /app/media
 USER appuser
 
 # Instalar dependências da aplicação
