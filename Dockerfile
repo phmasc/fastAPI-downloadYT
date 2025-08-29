@@ -1,7 +1,7 @@
-# Usar imagem base oficial do Python
+# Base oficial do Python
 FROM python:3.12-slim
 
-# Variáveis de ambiente
+# Variáveis de ambiente para otimizar Python e pip
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
@@ -10,28 +10,33 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Diretório de trabalho
 WORKDIR /app
 
-# Usuário não-root
+# Instalar dependências do sistema (curl para healthcheck)
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Criar usuário não-root
 RUN adduser --disabled-password --gecos "" appuser && chown -R appuser:appuser /app
 USER appuser
 
-# Dependências
+# Instalar dependências da aplicação
 COPY --chown=appuser:appuser app/requirements.txt .
 RUN if [ -s requirements.txt ]; then pip install --no-cache-dir -r requirements.txt; fi
 
-# Código da aplicação
+# Copiar código da aplicação
 COPY --chown=appuser:appuser app .
 
-# Porta exposta
+# Expor porta
 EXPOSE 8000
 
-# Labels OCI (metadados da imagem)
+# Labels OCI (metadados)
 LABEL org.opencontainers.image.title="fastapi-hello" \
       org.opencontainers.image.description="FastAPI Hello World example" \
       org.opencontainers.image.licenses="MIT" \
-      org.opencontainers.image.source="https://github.com/SEU_USUARIO/SEU_REPO"
+      org.opencontainers.image.source="https://github.com/phmasc/fastAPI-downloadYT"
 
-# Healthcheck opcional (só se tiver endpoint /health)
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD curl -f http://127.0.0.1:8000/health || exit 1
+# Healthcheck (bate na rota /health)
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+    CMD curl -f http://127.0.0.1:8000/health || exit 1
 
-# Comando padrão
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "false", "--workers", "1"]
+# Comando padrão (produção)
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
